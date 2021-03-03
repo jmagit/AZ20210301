@@ -1,0 +1,106 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>Microservicios</name>
+    </assembly>
+    <members>
+        <member name="T:Microservicios.Controllers.ErrorMessage">
+            <summary>
+            Encapsula los mensajes de error
+            </summary>
+        </member>
+        <member name="P:Microservicios.Controllers.ErrorMessage.Message">
+            <summary>
+            Causa del error
+            </summary>
+        </member>
+        <member name="P:Microservicios.Controllers.ErrorMessage.Description">
+            <summary>
+            Descripción del error
+            </summary>
+        </member>
+        <member name="T:Microservicios.Controllers.WeatherForecastController">
+            <summary>
+            Mantenimiento de predicciones
+            </summary>
+        </member>
+        <member name="M:Microservicios.Controllers.WeatherForecastController.GetWeatherForecast(System.Int32)">
+            <summary>
+            Consulta una prediccion
+            </summary>
+            <param name="id">Código de la predicción</param>
+            <returns>Detalles de la prediccion</returns>
+            <response code="200">Predicción encontrada</response>
+            <response code="404">Predicción no encontrada</response>            
+        </member>
+        <member name="M:Microservicios.Controllers.WeatherForecastController.PostWeatherForecast(Microservicios.WeatherForecast)">
+            <summary>
+            Crea una nueva predicción
+            </summary>
+            <param name="value">Detalles de la predicción</param>
+            <returns>Codigo de estado</returns>
+            <response code="201">Predicción creada</response>
+            <response code="400">Clave duplicada</response>            
+            <response code="409">Problemas de persistencia</response>            
+        </member>
+        <member name="M:Microservicios.Controllers.WeatherForecastController.PutWeatherForecast(System.Int32,Microservicios.WeatherForecast)">
+            <summary>
+            Modificación de la prediccion
+            </summary>
+            <param name="id">Código de la predicción</param>
+            <param name="value">Detalles de la predicción</param>
+            <returns></returns>
+            <response code="204">Predicción modificado</response>
+            <response code="400">Error en el identificador</response>            
+            <response code="404">Predicción no encontrada</response>            
+            <response code="409">Problemas de persistencia</response>            
+            <response code="412">Problemas de concurrencia</response>            
+        </member>
+        <member name="M:Microservicios.Controllers.WeatherForecastController.IDeleteWeatherForecast(System.Int32)">
+            <summary>
+            Borrado de la predicción
+            </summary>
+            <param name="id">Código de la predicción</param>
+            <returns></returns>
+            <response code="204">Predicción eliminada</response>
+            <response code="404">Predicción no encontrada</response>            
+            <response code="409">Problemas de persistencia</response>            
+            <response code="412">Problemas de concurrencia</response>            
+        </member>
+        <member name="T:Microservicios.WeatherForecast">
+            <summary>
+            Predicción del tiempo
+            </summary>
+        </member>
+        <member name="P:Microservicios.WeatherForecast.Id">
+            <summary>
+            Identificador de la predicción
+            </summary>
+            <example>1</example>
+        </member>
+        <member name="P:Microservicios.WeatherForecast.Date">
+            <summary>
+            Fecha  de la predicción
+            </summary>
+            <example>2021-01-01T10:18:53.492Z</example>
+        </member>
+        <member name="P:Microservicios.WeatherForecast.TemperatureC">
+            <summary>
+            Temperatura en grados centigrados
+            </summary>
+            <example>10</example>
+        </member>
+        <member name="P:Microservicios.WeatherForecast.TemperatureF">
+            <summary>
+            Temperatura en grados fahrenheit
+            </summary>
+            <example>50</example>
+        </member>
+        <member name="P:Microservicios.WeatherForecast.Summary">
+            <summary>
+            Resumen
+            </summary>
+            <example>Cool</example>
+        </member>
+    </members>
+</doc>
