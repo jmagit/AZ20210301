@@ -1,0 +1,850 @@
+openapi: 3.0.0
+info:
+  version: '1.0'
+  title: 'Microservicio: Agenda'
+  description: Ejercicio de API First.
+  contact:
+    name: Yo Mismo
+    url: 'http://www.example.com'
+    email: myeaddress@example.com
+  license:
+    name: Apache License Version 2.0
+tags:
+  - name: contactos-resource
+    description: Gestion de persona
+  - name: eventos-resource
+    description: Gestion de eventos
+paths:
+  /contactos:
+    get:
+      tags:
+        - contactos-resource
+      summary: Listado de contactos
+      operationId: getAllContactos
+      parameters:
+        - $ref: '#/components/parameters/NumeroDePagina'
+        - $ref: '#/components/parameters/NumeroDeFilas'
+      responses:
+        '200':
+          description: OK
+          content:
+            text/json:
+                schema:
+                  $ref: '#/components/schemas/Contactos'
+            application/json:
+                schema:
+                  $ref: '#/components/schemas/Contactos'
+            application/xml:
+                schema:
+                  $ref: '#/components/schemas/Contactos'
+            text/xml:
+                schema:
+                  $ref: '#/components/schemas/Contactos'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+      deprecated: false
+    post:
+      tags:
+        - contactos-resource
+      summary: Añadir un nuevo contacto
+      operationId: addContacto
+      requestBody:
+        $ref: '#/components/requestBodies/DatosContacto'
+      responses:
+        '201':
+          description: Created
+          headers:
+            location:
+              description: Url para consultar el nuevo contacto
+              schema:
+                type: string
+          content:
+            text/json:
+                schema:
+                  $ref: '#/components/schemas/Contacto'
+            application/json:
+                schema:
+                  $ref: '#/components/schemas/Contacto'
+            application/xml:
+                schema:
+                  $ref: '#/components/schemas/Contacto'
+            text/xml:
+                schema:
+                  $ref: '#/components/schemas/Contacto'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '400':
+          $ref: '#/components/responses/Status400DuplicateKey'
+        '404':
+          $ref: '#/components/responses/Status404'
+        '409':
+          $ref: '#/components/responses/Status409'
+      deprecated: false
+  '/contactos/{id}':
+    parameters:
+      - name: id
+        description: Identificador del contacto
+        in: path
+        schema:
+          type: integer
+          format: int32
+        required: true
+    get:
+      tags:
+        - contactos-resource
+      summary: Recuperar los datos de un contacto
+      operationId: getOneContacto
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Contacto'
+              examples:                
+                Contacto1:
+                  value:
+                    id: 1
+                    nombre: Artus
+                    apellidos: Marke
+                    correo: amarke0@home.pl
+                    telefono: 539 990 5724
+                    modificado: '2020-12-30T04:33:12.0000000+00:00'
+                Contacto2:
+                  value:
+                    id: 2
+                    nombre: Blondie
+                    apellidos: Paszak
+                    correo: bpaszak1@nature.com
+                    telefono: 904 977 7051
+                    modificado: '2021-02-13T11:54:37.0000000+00:00'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          $ref: '#/components/responses/Status404'
+      deprecated: false
+    put:
+      tags:
+        - contactos-resource
+      summary: Modificar los datos de un contacto existente
+      operationId: changeContacto
+      requestBody:
+        $ref: '#/components/requestBodies/DatosContacto'
+      responses:
+        '204':
+          description: No Content
+        '201':
+          description: Created
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '400':
+          $ref: '#/components/responses/Status400DuplicateKey'
+        '404':
+          $ref: '#/components/responses/Status404'
+        '409':
+          $ref: '#/components/responses/Status409'
+        '412':
+          $ref: '#/components/responses/Status412'
+      deprecated: false
+    delete:
+      tags:
+        - contactos-resource
+      summary: Borrar los datos de un contacto existente
+      operationId: deleteContacto
+      responses:
+        '204':
+          description: No Content
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          $ref: '#/components/responses/Status404'
+        '409':
+          $ref: '#/components/responses/Status409'
+        '412':
+          $ref: '#/components/responses/Status412'
+      deprecated: false
+  '/contactos/{id}/eventos':
+    parameters:
+      - name: id
+        description: Identificador del contacto
+        in: path
+        schema:
+          type: integer
+          format: int32
+        required: true
+    get:
+      tags:
+        - contactos-resource
+        - eventos-resource
+      summary: Recuperar los eventos de un contacto
+      operationId: getEventosContacto
+      responses:
+        '200':
+          description: OK
+          content:
+            text/json:
+                schema:
+                  $ref: '#/components/schemas/Eventos'
+            application/json:
+                schema:
+                  $ref: '#/components/schemas/Eventos'
+            application/xml:
+                schema:
+                  $ref: '#/components/schemas/Eventos'
+            text/xml:
+                schema:
+                  $ref: '#/components/schemas/Eventos'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          $ref: '#/components/responses/Status404'
+      deprecated: false
+    post:
+      tags:
+        - contactos-resource
+        - eventos-resource
+      summary: Añade un contacto al evento 
+      operationId: postEventosContacto
+      parameters:
+        - name: idevento
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            text/json:
+                schema:
+                  $ref: '#/components/schemas/Eventos'
+            application/json:
+                schema:
+                  $ref: '#/components/schemas/Eventos'
+            application/xml:
+                schema:
+                  $ref: '#/components/schemas/Eventos'
+            text/xml:
+                schema:
+                  $ref: '#/components/schemas/Eventos'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          $ref: '#/components/responses/Status404'
+      deprecated: false
+    delete:
+      tags:
+        - contactos-resource
+        - eventos-resource
+      summary: Quita un contacto al evento 
+      operationId: postEventosContacto
+      parameters:
+        - name: idevento
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+          content:
+            text/json:
+                schema:
+                  $ref: '#/components/schemas/Eventos'
+            application/json:
+                schema:
+                  $ref: '#/components/schemas/Eventos'
+            application/xml:
+                schema:
+                  $ref: '#/components/schemas/Eventos'
+            text/xml:
+                schema:
+                  $ref: '#/components/schemas/Eventos'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          $ref: '#/components/responses/Status404'
+      deprecated: false
+  /eventos:
+    get:
+      tags:
+        - eventos-resource
+      summary: Listado de eventos
+      operationId: getAllEventos
+      parameters:
+        - $ref: '#/components/parameters/NumeroDePagina'
+        - $ref: '#/components/parameters/NumeroDeFilas'
+      responses:
+        '200':
+          description: OK
+          content:
+            text/json:
+                schema:
+                  $ref: '#/components/schemas/Eventos'
+            application/json:
+                schema:
+                  $ref: '#/components/schemas/Eventos'
+            application/xml:
+                schema:
+                  $ref: '#/components/schemas/Eventos'
+            text/xml:
+                schema:
+                  $ref: '#/components/schemas/Eventos'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+      deprecated: false
+    post:
+      tags:
+        - eventos-resource
+      summary: Añadir un nuevo evento
+      operationId: addEvento
+      requestBody:
+        $ref: '#/components/requestBodies/DatosEvento'
+      responses:
+        '201':
+          description: Created
+          headers:
+            location:
+              description: Url para consultar el nuevo evento
+              schema:
+                type: string
+          content:
+            text/json:
+                schema:
+                  $ref: '#/components/schemas/Evento'
+            application/json:
+                schema:
+                  $ref: '#/components/schemas/Evento'
+            application/xml:
+                schema:
+                  $ref: '#/components/schemas/Evento'
+            text/xml:
+                schema:
+                  $ref: '#/components/schemas/Evento'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '400':
+          $ref: '#/components/responses/Status400DuplicateKey'
+        '404':
+          $ref: '#/components/responses/Status404'
+        '409':
+          $ref: '#/components/responses/Status409'
+      deprecated: false
+  '/eventos/{id}':
+    parameters:
+      - name: id
+        description: Identificador del evento
+        in: path
+        schema:
+          type: integer
+          format: int32
+        required: true
+    get:
+      tags:
+        - eventos-resource
+      summary: Recuperar los datos de un evento
+      operationId: getOneEvento
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Evento'
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          $ref: '#/components/responses/Status404'
+      deprecated: false
+    put:
+      tags:
+        - eventos-resource
+      summary: Modificar los datos de un evento existente
+      operationId: changeEvento
+      requestBody:
+        $ref: '#/components/requestBodies/DatosEvento'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Evento'
+        '204':
+          description: No Content
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '400':
+          $ref: '#/components/responses/Status400DuplicateKey'
+        '404':
+          $ref: '#/components/responses/Status404'
+        '409':
+          $ref: '#/components/responses/Status409'
+        '412':
+          $ref: '#/components/responses/Status412'
+      deprecated: false
+    delete:
+      tags:
+        - eventos-resource
+      summary: Borrar los datos de un evento existente
+      operationId: deleteEvento
+      responses:
+        '204':
+          description: No Content
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '404':
+          $ref: '#/components/responses/Status404'
+        '409':
+          $ref: '#/components/responses/Status409'
+        '412':
+          $ref: '#/components/responses/Status412'
+      deprecated: false
+  '/eventos/{id}/abierto':
+    parameters:
+      - name: id
+        description: Identificador del evento
+        in: path
+        schema:
+          type: integer
+          format: int32
+        required: true
+    post:
+      tags:
+        - eventos-resource
+      summary: Abre un evento
+      operationId: OpenEvento
+      responses:
+        '201':
+          description: Accepted
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '400':
+          $ref: '#/components/responses/Status400'
+        '404':
+          $ref: '#/components/responses/Status404'
+      deprecated: false
+  '/eventos/{id}/cerrado':
+    parameters:
+      - name: id
+        description: Identificador del evento
+        in: path
+        schema:
+          type: integer
+          format: int32
+        required: true
+    post:
+      tags:
+        - eventos-resource
+      summary: Cierra un evento
+      operationId: CloseEvento
+      responses:
+        '201':
+          description: Accepted
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '400':
+          $ref: '#/components/responses/Status400'
+        '404':
+          $ref: '#/components/responses/Status404'
+      deprecated: false
+  '/eventos/{id}/cancelado':
+    parameters:
+      - name: id
+        description: Identificador del evento
+        in: path
+        schema:
+          type: integer
+          format: int32
+        required: true
+    post:
+      tags:
+        - eventos-resource
+      summary: Cancela un evento
+      operationId: CancelEvento
+      responses:
+        '201':
+          description: Accepted
+        '401':
+          description: Unauthorized
+        '403':
+          description: Forbidden
+        '400':
+          $ref: '#/components/responses/Status400'
+        '404':
+          $ref: '#/components/responses/Status404'
+      deprecated: false
+components:
+  schemas:
+    Contactos:
+      title: Lista de contactos
+      description: Listado de contactos
+      type: array
+      items:
+        $ref: '#/components/schemas/Contacto'
+      example:
+      - id: 1
+        nombre: Artus
+        apellidos: Marke
+        correo: amarke0@home.pl
+        telefono: 539 990 5724
+        modificado: '2020-12-30T04:33:12.0000000+00:00'
+      - id: 2
+        nombre: Blondie
+        apellidos: Paszak
+        correo: bpaszak1@nature.com
+        telefono: 904 977 7051
+        modificado: '2021-02-13T11:54:37.0000000+00:00'
+      - id: 3
+        nombre: Erin
+        apellidos: Storer
+        correo: estorer2@elpais.com
+        telefono: 856 684 7291
+        modificado: '2021-02-15T18:13:51.0000000+00:00'
+      - id: 4
+        nombre: Gabriela
+        apellidos: Ferreras
+        correo: gferreras3@github.io
+        telefono: 854 656 2578
+        modificado: '2020-11-03T12:59:12.0000000+00:00'
+      - id: 5
+        nombre: Cyndia
+        apellidos: Tomaszek
+        correo: ctomaszek4@auda.org.au
+        telefono: 936 874 8927
+        modificado: '2020-09-30T09:35:26.0000000+00:00'
+      - id: 6
+        nombre: Ring
+        apellidos: Hiom
+        correo: rhiom5@buzzfeed.com
+        telefono: 468 782 2260
+        modificado: '2020-03-14T23:25:07.0000000+00:00'
+      - id: 7
+        nombre: Atalanta
+        apellidos: Livick
+        correo: alivick6@mysql.com
+        telefono: 504 793 1516
+        modificado: '2020-09-14T09:01:43.0000000+00:00'
+      - id: 8
+        nombre: Rania
+        apellidos: Maureen
+        correo: rmaureen7@nih.gov
+        telefono: 638 502 7843
+        modificado: '2020-10-03T01:59:42.0000000+00:00'
+      - id: 9
+        nombre: Evin
+        apellidos: Pena
+        correo: epena8@usnews.com
+        telefono: 395 841 8357
+        modificado: '2020-10-13T18:03:35.0000000+00:00'
+      - id: 10
+        nombre: Freddy
+        apellidos: Le Claire
+        correo: fleclaire9@pagesperso-orange.fr
+        telefono: 178 933 8589
+        modificado: '2020-10-28T05:50:43.0000000+00:00'
+    Contacto:
+      title: Contacto
+      description: Datos de contacto
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+          description: Identificador del contacto
+        nombre:
+          type: string
+          maxLength: 50
+        apellidos:
+          type: string
+          maxLength: 100
+        correo:
+          type: string
+          maxLength: 250
+        telefono:
+          type: string
+          maxLength: 15
+        modificado:
+          type: string
+          format: dateTime
+          description: Fecha de la última modificación
+      required:
+        - id
+        - nombre
+        - apellidos
+      example:
+        id: 1
+        nombre: Pepito
+        apellidos: Grillo
+        correo: pepito.grillo@example.com
+        telefono: "555 990 572"
+        modificado: "2020-12-30T04:33:12Z"
+    Eventos:
+      title: Lista de eventos
+      description: Listado de eventos
+      type: array
+      items:
+        $ref: '#/components/schemas/Evento'
+    Evento:
+      title: Evento
+      type: object
+      properties:
+        eventoId:
+          type: integer
+          format: int32
+        contacto:
+          $ref: '#/components/schemas/Contacto'
+        fecha:
+          type: string
+          format: dateTime
+          description: Fecha del evento
+        ref:
+          description: URL del evento
+          type: string
+          maxLength: 500
+          pattern: ^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$
+        direccion:
+          type: string
+        estado:
+          type: string
+          readOnly: true
+          enum: ['abierto', 'cerrado', 'cancelado'] 
+        asistentes:
+            $ref: '#/components/schemas/Contactos'
+      required:
+        - eventoId
+        - contacto
+        - fecha
+        - direccion
+    EventoEdit:
+      title: Evento para editar
+      type: object
+      properties:
+        eventoId:
+          type: integer
+          format: int32
+        contactoId:
+          type: integer
+          format: int32
+        fecha:
+          description: Fecha del evento
+          type: string
+          format: dateTime
+        ref:
+          description: URL del evento
+          type: string
+          maxLength: 500
+          pattern: ^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$
+        direccion:
+          type: string
+        estado:
+          type: string
+          readOnly: true
+          enum: ['abierto', 'cerrado', 'cancelado'] 
+        asistentes:
+            description: Listado de identificadores de contactos
+            items:
+              type: integer
+              format: int32
+      required:
+        - eventoId
+        - contacto
+        - fecha
+        - direccion
+    ErrorMessage:
+      title: Notificacion de error
+      description: Encapsula los mensajes de error
+      type: object
+      properties:
+        message:
+          description: Causa del error
+          type: string
+          nullable: false
+        description:
+          description: Descripción del error
+          type: string
+          nullable: true
+      additionalProperties: false
+  parameters:
+    NumeroDePagina:
+      name: pag
+      in: query
+      required: false
+      description: Numero de pagina actual en base 0
+      schema:
+        type: integer
+    NumeroDeFilas:
+      name: rows
+      in: query
+      required: false
+      description: Numero de filas por pagina actual, por defecto son 20.
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+      examples:
+        diez:
+          value: 10
+        veinte: 
+          value: 20
+        cincuenta:
+          value: 50
+  requestBodies:
+    DatosContacto:
+      description: Datos del contacto
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Contacto'
+        text/json:
+          schema:
+            $ref: '#/components/schemas/Contacto'
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/Contacto'
+        text/xml:
+          schema:
+            $ref: '#/components/schemas/Contacto'
+    DatosEvento:
+      description: Datos del evento
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Evento'
+        text/json:
+          schema:
+            $ref: '#/components/schemas/Evento'
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/Evento'
+        text/xml:
+          schema:
+            $ref: '#/components/schemas/Evento'
+  responses:
+    Status400:
+      description: Bad request
+      content:
+        text/plain:
+          schema:
+            $ref: '#/components/schemas/ErrorMessage'
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorMessage'
+        text/json:
+          schema:
+            $ref: '#/components/schemas/ErrorMessage'
+    Status400BadKey:
+      description: Error en el identificador
+      content:
+        text/plain:
+          schema:
+            $ref: '#/components/schemas/ErrorMessage'
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorMessage'
+        text/json:
+          schema:
+            $ref: '#/components/schemas/ErrorMessage'
+    Status400DuplicateKey:
+      description: Error en el identificador
+      content:
+        text/plain:
+          schema:
+            $ref: '#/components/schemas/ErrorMessage'
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorMessage'
+        text/json:
+          schema:
+            $ref: '#/components/schemas/ErrorMessage'
+    Status404:
+      description: Recurso no encontrado
+      content:
+        text/plain:
+          schema:
+            $ref: '#/components/schemas/ErrorMessage'
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorMessage'
+        text/json:
+          schema:
+            $ref: '#/components/schemas/ErrorMessage'
+        application/xml:
+          schema:
+            $ref: '#/components/schemas/ErrorMessage'
+        text/xml:
+          schema:
+            $ref: '#/components/schemas/ErrorMessage'
+    Status409:
+      description: Problemas de persistencia
+      content:
+        text/plain:
+          schema:
+            $ref: '#/components/schemas/ErrorMessage'
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorMessage'
+        text/json:
+          schema:
+            $ref: '#/components/schemas/ErrorMessage'
+    Status412:
+      description: Problemas de concurrencia
+      content:
+        text/plain:
+          schema:
+            $ref: '#/components/schemas/ErrorMessage'
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorMessage'
+        text/json:
+          schema:
+            $ref: '#/components/schemas/ErrorMessage'
+  securitySchemes:
+    BasicAuth:
+      type: http
+      scheme: basic
+    JWTAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    ApiKeyAuth:
+      type: apiKey
+      name: x-api-key
+      in: header
+    ApiKeyQuery:
+      type: apiKey
+      name: api-key
+      in: query
+security:
+  - ApiKeyAuth: []
+  - ApiKeyQuery: []

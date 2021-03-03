@@ -248,7 +248,7 @@ components:
         value: { id: 1, name: "Pepito", password: "P@$$w0rd"}
     Users:
       type: array
-      title: Usuarios
+      title: Lista de Usuarios
       items:
         $ref: '#/components/schemas/User'
   requestBodies:
