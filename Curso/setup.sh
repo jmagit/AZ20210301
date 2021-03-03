@@ -25,7 +25,7 @@ az appservice plan create --name $apiappname --resource-group $RESOURCE_GROUP --
 
 printf "\nCreating API App ... (3/7)\n\n"
 
-az webapp create --name $apiappname --resource-group $RESOURCE_GROUP --plan $apiappname --deployment-local-git --verbose
+az webapp create --name $apiappname --resource-group $RESOURCE_GROUP --plan $apiappname --verbose
 
 
 printf "\nSetting the account-level deployment credentials ...(4/7)\n\n"
@@ -49,6 +49,8 @@ printf "\nSetting Git remote...(5/7)\n\n"
 
 
 git remote add $REMOTE_NAME $GIT_URL
+git branch master
+git push -u origin master
 
 
 printf "\nGit add...(6/7)\n\n"
@@ -63,7 +65,6 @@ printf "\nGit push... (7/7)\n\n"
 # printf "When prompted for a password enter this: $DEPLOY_PASSWORD\n"
 # git push --set-upstream $REMOTE_NAME master
 git push "https://$DEPLOY_USER:$DEPLOY_PASSWORD@$apiappname.scm.azurewebsites.net/$apiappname.git"
-
 
 printf "Setup complete!\n\n"
 
