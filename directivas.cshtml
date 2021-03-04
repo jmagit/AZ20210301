@@ -1,0 +1,45 @@
+[
+{
+    "id": {{obj.id}}
+    "nombre": "Artus"
+    "apellidos": "Marke"
+    "correo": "amarke0@home.pl"
+    {% if cod %}
+    "telefono": "539 990 5724"
+    {% else %}
+    "telefono": "{{obj.telf}}"
+    {% ifend %}
+    "modificado": "{{DateTime.Now}}"
+}
+]
+
+<outbound>
+    <base />
+    <json-to-xml apply="always" consider-accept-header="true" parse-date="true" />
+    <set-header name="x-powered-by" exists-action="delete" />
+</outbound>
+    <inbound>
+        <base />
+        <set-query-parameter name="page" exists-action="override">
+            <value>0</value>
+        </set-query-parameter>
+        <set-query-parameter name="rows" exists-action="override">
+            <value>20</value>
+        </set-query-parameter>
+    </inbound>
+
+<policies>
+    <inbound>
+        <base />
+        <mock-response status-code="200" content-type="application/json" />
+    </inbound>
+    <backend>
+        <base />
+    </backend>
+    <outbound>
+        <base />
+    </outbound>
+    <on-error>
+        <base />
+    </on-error>
+</policies>

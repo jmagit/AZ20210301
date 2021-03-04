@@ -262,7 +262,7 @@ paths:
         - contactos-resource
         - eventos-resource
       summary: Quita un contacto al evento 
-      operationId: postEventosContacto
+      operationId: deleteEventosContacto
       parameters:
         - name: idevento
           in: query

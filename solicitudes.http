@@ -1,0 +1,2 @@
+GET https://cursoeverisprofe.azure-api.net/censo;rev=1/api/Census
+Accept: text/xml
