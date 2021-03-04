@@ -1,0 +1,107 @@
+﻿<?xml version="1.0"?>
+<DTS:Executable xmlns:DTS="www.microsoft.com/SqlServer/Dts"
+  DTS:refId="Package"
+  DTS:CreationDate="3/4/2021 4:53:32 PM"
+  DTS:CreationName="Microsoft.Package"
+  DTS:CreatorComputerName="JAVIER-LAPTOP"
+  DTS:CreatorName="JAVIER-LAPTOP\Javier"
+  DTS:DTSID="{15C66D17-EDA9-4C9C-9330-7A1905A95115}"
+  DTS:ExecutableType="Microsoft.Package"
+  DTS:LastModifiedProductVersion="15.0.2000.152"
+  DTS:LocaleID="3082"
+  DTS:ObjectName="Package"
+  DTS:PackageType="5"
+  DTS:VersionBuild="5"
+  DTS:VersionGUID="{A10C10DE-7338-4885-9B23-306C0FF3286F}">
+  <DTS:Property
+    DTS:Name="PackageFormatVersion">8</DTS:Property>
+  <DTS:ConnectionManagers>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[Administrador de conexiones HTTP]"
+      DTS:CreationName="HTTP"
+      DTS:DTSID="{E5FA5341-00CD-4040-9120-6D8FDC395488}"
+      DTS:ObjectName="Administrador de conexiones HTTP">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:ConnectionString="https://cursoeverisprofe2.azure-api.net/soap">
+          <DTS:HttpConnection
+            DTS:ServerURL="https://cursoeverisprofe2.azure-api.net/soap">
+            <DTS:Property
+              DTS:Name="ServerPassword"
+              Sensitive="1"
+              Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAjgnwq+Kzwkmer+iegnpxiQAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAABjhLekGQMhC28PpHattkA8mwBbzpaUI3RkqfIvCcWmiwAAAAAOgAAAAAIAACAAAADev+KxnGPGX2U8loXyXry2Fy2p6FiTVSIYfAADzfDhwxAAAAAcIdB/kVVCk4yU0pHogruBQAAAAKGi7V1yebaxocirQ4PjSqvtsiVo4cL7IeQyDjP8sOGx7GSaRSuv7F6Bwsqfjk1DjFq84xQ7SV2AdkcWKStPZ+Q</DTS:Property>
+            <DTS:Property
+              DTS:Name="ProxyPassword"
+              Sensitive="1"
+              Encrypted="1">AQAAANCMnd8BFdERjHoAwE/Cl+sBAAAAjgnwq+Kzwkmer+iegnpxiQAAAAAIAAAARABUAFMAAAAQZgAAAAEAACAAAADF5hS1YNGHpB7dDOzZTJQy+EW66yYAuskzmahzK1vj7gAAAAAOgAAAAAIAACAAAAAoT3esHmjVjI2yVEQ+E5s+NV4y3xSibyIa4QRFZrDyvBAAAADysxYxfxJk5xryU+46FagwQAAAAOhDfQanSCQHBIoX2eej5q2exxhYyUoM4MTWAiaiAXn9bRQ36jul7c9tG8a1eTtoaw3eVFLzdlivvIY8x6Nawks</DTS:Property>
+          </DTS:HttpConnection>
+        </DTS:ConnectionManager>
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+    <DTS:ConnectionManager
+      DTS:refId="Package.ConnectionManagers[SOAPResult]"
+      DTS:CreationName="FILE"
+      DTS:DTSID="{DFF3028C-C3B2-4F94-BEB8-6179F354149C}"
+      DTS:ObjectName="SOAPResult">
+      <DTS:ObjectData>
+        <DTS:ConnectionManager
+          DTS:FileUsageType="1"
+          DTS:ConnectionString="SOAPResult" />
+      </DTS:ObjectData>
+    </DTS:ConnectionManager>
+  </DTS:ConnectionManagers>
+  <DTS:Variables />
+  <DTS:Executables>
+    <DTS:Executable
+      DTS:refId="Package\Tarea Servicio Web"
+      DTS:CreationName="Microsoft.WebServiceTask"
+      DTS:Description="Tarea Servicio Web"
+      DTS:DTSID="{7B6A74E7-B019-4944-9F77-CFDB02F57600}"
+      DTS:ExecutableType="Microsoft.WebServiceTask"
+      DTS:LocaleID="-1"
+      DTS:ObjectName="Tarea Servicio Web"
+      DTS:ThreadHint="0">
+      <DTS:Variables />
+      <DTS:ObjectData>
+        <WSTask:WebServiceTaskData
+          WSTask:ConnectionName="{E5FA5341-00CD-4040-9120-6D8FDC395488}"
+          WSTask:Service="NumberConversion"
+          WSTask:WSDLFile="D:\Cursos\Azure\AZ20210301\NumberConversion.wsdl"
+          WSTask:OutputLocation="SOAPResult" xmlns:WSTask="www.microsoft.com/sqlserver/dts/tasks/webservicetask">
+          <WSTask:MethodInfo
+            WSTask:MethodName="NumberToWords"
+            WSTask:MessageName="">
+            <WSTask:Documentation>Returns the word corresponding to the positive number passed as parameter. Limited to quadrillions.</WSTask:Documentation>
+            <WSTask:ParamInfo
+              WSTask:Name="ubiNum"
+              WSTask:Datatype="unsignedLong"
+              WSTask:ParamType="Primitive"
+              WSTask:SeqNumber="0">
+              <WSTask:PrimitiveValue>1234</WSTask:PrimitiveValue>
+            </WSTask:ParamInfo>
+          </WSTask:MethodInfo>
+        </WSTask:WebServiceTaskData>
+      </DTS:ObjectData>
+    </DTS:Executable>
+  </DTS:Executables>
+  <DTS:DesignTimeProperties><![CDATA[<?xml version="1.0"?>
+<!--Esta sección CDATA contiene la información de diseño del paquete. Esta sección incluye información como, por ejemplo, las coordenadas (x,y), el ancho y el alto.-->
+<!--Si edita manualmente esta sección y comete un error, puede eliminarlo. -->
+<!--El paquete podrá cargarse normalmente, pero se perderá la información de diseño anterior y el diseñador reorganizará los elementos automáticamente en la superficie de diseño.-->
+<Objects
+  Version="8">
+  <!--Cada uno de los nodos siguientes contiene propiedades que no afectan al comportamiento en tiempo de ejecución.-->
+  <Package
+    design-time-name="Package">
+    <LayoutInfo>
+      <GraphLayout
+        Capacity="4" xmlns="clr-namespace:Microsoft.SqlServer.IntegrationServices.Designer.Model.Serialization;assembly=Microsoft.SqlServer.IntegrationServices.Graph">
+        <NodeLayout
+          Size="170,42"
+          Id="Package\Tarea Servicio Web"
+          TopLeft="98,257" />
+      </GraphLayout>
+    </LayoutInfo>
+  </Package>
+</Objects>]]></DTS:DesignTimeProperties>
+</DTS:Executable>

@@ -1,0 +1,65 @@
+openapi: 3.0.1
+info:
+  title: NumberConversionSOAP
+  description: >-
+    The Number Conversion Web Service, implemented with Visual DataFlex,
+    provides functions that convert numbers into words or dollar amounts.
+  version: '1.0'
+servers:
+  - url: 'https://cursoeverisprofe2.azure-api.net/soap'
+externalDocs:
+  url: https://github.com/Azure/autorest/blob/master/docs/extensions/readme.md
+paths:
+  /:
+    post:
+      summary: NumberToWords
+      description: >-
+        Returns the word corresponding to the positive number passed as
+        parameter. Limited to quadrillions.
+      operationId: 6040e197a6ab670ea01327a4
+      requestBody:
+        description: NumberToWordsSoapRequest
+        content:
+          text/xml:
+            example: "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<Envelope xmlns=\"http://schemas.xmlsoap.org/soap/envelope/\">\r\n  <Body>\r\n    <NumberToWords xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.dataaccess.com/webservicesserver/\">\r\n      <ubiNum>0</ubiNum>\r\n    </NumberToWords>\r\n  </Body>\r\n</Envelope>"
+      responses:
+        '200':
+          description: NumberToWordsSoapResponse
+          content:
+            text/xml:
+              example: "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<Envelope xmlns=\"http://schemas.xmlsoap.org/soap/envelope/\">\r\n  <Body>\r\n    <NumberToWordsResponse xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.dataaccess.com/webservicesserver/\">\r\n      <NumberToWordsResult>NumberToWordsResult1</NumberToWordsResult>\r\n    </NumberToWordsResponse>\r\n  </Body>\r\n</Envelope>"
+components:
+  securitySchemes:
+    apiKeyHeader:
+      type: apiKey
+      name: Ocp-Apim-Subscription-Key
+      in: header
+    apiKeyQuery:
+      type: apiKey
+      name: subscription-key
+      in: query
+security:
+  - apiKeyHeader: []
+  - apiKeyQuery: []
+x-ms-export-notes:
+  - >-
+    The exported API contains schemas that aren't of content type
+    'application/vnd.oai.openapi.components+json', and are hence not exported as
+    OpenAPI components.
+x-ms-paths:
+  /?soapAction=NumberToDollars:
+    post:
+      summary: NumberToDollars
+      description: Returns the non-zero dollar amount of the passed number.
+      operationId: 6040e197a6ab670ea01327a5
+      requestBody:
+        description: NumberToDollarsSoapRequest
+        content:
+          text/xml:
+            example: "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<Envelope xmlns=\"http://schemas.xmlsoap.org/soap/envelope/\">\r\n  <Body>\r\n    <NumberToDollars xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.dataaccess.com/webservicesserver/\">\r\n      <dNum>1</dNum>\r\n    </NumberToDollars>\r\n  </Body>\r\n</Envelope>"
+      responses:
+        '200':
+          description: NumberToDollarsSoapResponse
+          content:
+            text/xml:
+              example: "<?xml version=\"1.0\" encoding=\"utf-8\"?>\r\n<Envelope xmlns=\"http://schemas.xmlsoap.org/soap/envelope/\">\r\n  <Body>\r\n    <NumberToDollarsResponse xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"http://www.dataaccess.com/webservicesserver/\">\r\n      <NumberToDollarsResult>NumberToDollarsResult1</NumberToDollarsResult>\r\n    </NumberToDollarsResponse>\r\n  </Body>\r\n</Envelope>"

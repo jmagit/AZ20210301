@@ -4,5 +4,37 @@ Accept: text/xml
 ###
 
 GET https://cursoeverisprofe2.azure-api.net/numeros/palabras?num=43210
-Ocp-Apim-Subscription-Key: 88a4bd1164c24c8aa5f6aa12aedccded
 Ocp-Apim-Trace: true
+
+###
+
+GET https://cursoeverisprofe2.azure-api.net/soap?wsdl
+
+###
+POST https://cursoeverisprofe2.azure-api.net/soap
+Content-Type: text/xml
+SOAPAction: "NumberToWords"
+
+<?xml version="1.0" encoding="utf-8"?>
+<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
+  <Body>
+    <NumberToWords xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.dataaccess.com/webservicesserver/">
+      <ubiNum>101</ubiNum>
+    </NumberToWords>
+  </Body>
+</Envelope>
+
+###
+
+POST https://cursoeverisprofe2.azure-api.net/soap HTTP/1.1
+Content-Type: text/xml
+SOAPAction: "NumberToDollars"
+
+<?xml version="1.0" encoding="utf-8"?>
+<Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
+  <Body>
+    <NumberToDollars xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://www.dataaccess.com/webservicesserver/">
+      <dNum>100</dNum>
+    </NumberToDollars>
+  </Body>
+</Envelope>

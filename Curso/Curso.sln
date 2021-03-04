@@ -3,18 +3,34 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31019.35
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Microservicios", "Microservicios\Microservicios.csproj", "{01C321C2-FAF4-431D-B984-F21BC84D52EC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Microservicios", "Microservicios\Microservicios.csproj", "{01C321C2-FAF4-431D-B984-F21BC84D52EC}"
+EndProject
+Project("{159641D6-6404-4A2A-AE62-294DE0FE8301}") = "SSIS", "SSIS\SSIS.dtproj", "{F81EAEB0-6F02-450D-9C4E-D21526ECD231}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Azure|Any CPU = Azure|Any CPU
 		Debug|Any CPU = Debug|Any CPU
+		Development|Any CPU = Development|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{01C321C2-FAF4-431D-B984-F21BC84D52EC}.Azure|Any CPU.ActiveCfg = Release|Any CPU
+		{01C321C2-FAF4-431D-B984-F21BC84D52EC}.Azure|Any CPU.Build.0 = Release|Any CPU
 		{01C321C2-FAF4-431D-B984-F21BC84D52EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{01C321C2-FAF4-431D-B984-F21BC84D52EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{01C321C2-FAF4-431D-B984-F21BC84D52EC}.Development|Any CPU.ActiveCfg = Debug|Any CPU
+		{01C321C2-FAF4-431D-B984-F21BC84D52EC}.Development|Any CPU.Build.0 = Debug|Any CPU
 		{01C321C2-FAF4-431D-B984-F21BC84D52EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{01C321C2-FAF4-431D-B984-F21BC84D52EC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F81EAEB0-6F02-450D-9C4E-D21526ECD231}.Azure|Any CPU.ActiveCfg = Azure
+		{F81EAEB0-6F02-450D-9C4E-D21526ECD231}.Azure|Any CPU.Build.0 = Azure
+		{F81EAEB0-6F02-450D-9C4E-D21526ECD231}.Debug|Any CPU.ActiveCfg = Development
+		{F81EAEB0-6F02-450D-9C4E-D21526ECD231}.Debug|Any CPU.Build.0 = Development
+		{F81EAEB0-6F02-450D-9C4E-D21526ECD231}.Development|Any CPU.ActiveCfg = Development
+		{F81EAEB0-6F02-450D-9C4E-D21526ECD231}.Development|Any CPU.Build.0 = Development
+		{F81EAEB0-6F02-450D-9C4E-D21526ECD231}.Release|Any CPU.ActiveCfg = Azure
+		{F81EAEB0-6F02-450D-9C4E-D21526ECD231}.Release|Any CPU.Build.0 = Azure
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
