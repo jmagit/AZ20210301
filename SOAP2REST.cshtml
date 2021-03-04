@@ -1,0 +1,232 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "NumberConversionREST",
+        "version": "1.0",
+        "description": "The Number Conversion Web Service, implemented with Visual DataFlex, provides functions that convert numbers into words or dollar amounts."
+    },
+    "host": "cursoeverisprofe2.azure-api.net",
+    "basePath": "/numeros",
+    "schemes": ["https"],
+    "securityDefinitions": {
+        "apiKeyHeader": {
+            "type": "apiKey",
+            "name": "Ocp-Apim-Subscription-Key",
+            "in": "header"
+        },
+        "apiKeyQuery": {
+            "type": "apiKey",
+            "name": "subscription-key",
+            "in": "query"
+        }
+    },
+    "security": [{
+        "apiKeyHeader": []
+    }, {
+        "apiKeyQuery": []
+    }],
+    "paths": {
+        "/palabras": {
+            "get": {
+                "description": "Returns the word corresponding to the positive number passed as parameter. Limited to quadrillions.",
+                "operationId": "6040e1bba6ab670ea01327ac",
+                "summary": "NumberToWords",
+                "parameters": [{
+                    "name": "num",
+                    "in": "query",
+                    "description": "Numero a convertir en palabras",
+                    "required": true,
+                    "type": "integer"
+                }],
+                "produces": ["application/json"],
+                "responses": {
+                    "200": {
+                        "description": "NumberToWordsSoapResponse",
+                        "schema": {
+                            "$ref": "#/definitions/CadenaResponse"
+                        },
+                        "examples": {
+                            "application/json": {
+                                "cadena": "sample"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/NumberToDollars": {
+            "post": {
+                "description": "Returns the non-zero dollar amount of the passed number.",
+                "operationId": "6040e1bba6ab670ea01327ad",
+                "summary": "NumberToDollars",
+                "parameters": [{
+                    "name": "numberToDollars",
+                    "in": "body",
+                    "schema": {
+                        "$ref": "#/definitions/NumberToDollars"
+                    },
+                    "description": "NumberToDollarsSoapRequest"
+                }],
+                "consumes": ["application/json"],
+                "produces": ["application/json"],
+                "responses": {
+                    "200": {
+                        "description": "NumberToDollarsSoapResponse",
+                        "schema": {
+                            "$ref": "#/definitions/NumberToDollarsResponse"
+                        },
+                        "examples": {
+                            "application/json": {
+                                "numberToDollarsResponse": {
+                                    "numberToDollarsResult": "sample"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "NumberToWords": {
+            "type": "object",
+            "properties": {
+                "numberToWords": {
+                    "type": "object",
+                    "properties": {
+                        "ubiNum": {
+                            "type": "number"
+                        }
+                    }
+                }
+            },
+            "example": {
+                "numberToWords": {
+                    "ubiNum": 1
+                }
+            }
+        },
+        "NumberToWordsResponse": {
+            "type": "object",
+            "properties": {
+                "numberToWordsResponse": {
+                    "type": "object",
+                    "properties": {
+                        "numberToWordsResult": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "NumberToDollars": {
+            "type": "object",
+            "properties": {
+                "numberToDollars": {
+                    "type": "object",
+                    "properties": {
+                        "dNum": {
+                            "type": "number"
+                        }
+                    }
+                }
+            },
+            "example": {
+                "numberToDollars": {
+                    "dNum": 1
+                }
+            }
+        },
+        "NumberToDollarsResponse": {
+            "type": "object",
+            "properties": {
+                "numberToDollarsResponse": {
+                    "type": "object",
+                    "properties": {
+                        "numberToDollarsResult": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "CadenaResponse": {
+            "type": "object",
+            "properties": {
+                "cadena": {
+                    "type": "string"
+                }
+            }
+        }
+    },
+    "tags": []
+}
+
+
+<policies>
+    <inbound>
+        <base />
+        <set-method>POST</set-method>
+        <rewrite-uri template="/webservicesserver/NumberConversion.wso" copy-unmatched-params="false" />
+        <set-body template="liquid">
+			<soap:Envelope xmlns:soap="http://www.w3.org/2003/05/soap-envelope" xmlns="http://www.dataaccess.com/webservicesserver/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+				<soap:Body>
+					<NumberToWords>
+						<ubiNum>{{context.Request.OriginalUrl.Query["num"]}}</ubiNum>
+					</NumberToWords>
+				</soap:Body>
+			</soap:Envelope>
+		</set-body>
+        <set-header name="Content-Type" exists-action="override">
+            <value>application/soap+xml; Action="NumberToWords"</value>
+        </set-header>
+    </inbound>
+    <backend>
+        <base />
+    </backend>
+    <outbound>
+        <base />
+        <choose>
+            <when condition="@(context.Response.StatusCode < 400)">
+                <set-body template="liquid">
+        {
+            "cadena": {% if body.envelope.body.NumberToWordsResponse.NumberToWordsResult %}"{{body.envelope.body.NumberToWordsResponse.NumberToWordsResult | Replace: '\r', '\r' | Replace: '\n', '\n' | Replace: '([^\\](\\\\)*)"', '$1\"'}}"{% else %} null {% endif %}
+         }</set-body>
+            </when>
+            <otherwise>
+                <set-variable name="old-body" value="@(context.Response.Body.As<string>(preserveContent: true))" />
+                <!-- Error response as per https://github.com/Microsoft/api-guidelines/blob/master/Guidelines.md#7102-error-condition-responses -->
+                <set-body template="liquid">{
+            "error": {
+                "code": "{{body.envelope.body.fault.faultcode}}",
+                "message": "{{body.envelope.body.fault.faultstring}}"
+            }
+        }</set-body>
+                <choose>
+                    <when condition="@(string.IsNullOrEmpty(context.Response.Body.As<JObject>(preserveContent: true)["error"]["code"].ToString()) && string.IsNullOrEmpty(context.Response.Body.As<JObject>(preserveContent: true)["error"]["message"].ToString()))">
+                        <set-body>@{
+                    var newResponseBody = new JObject();
+                    newResponseBody["error"] = new JObject();
+                    newResponseBody["error"]["code"] = "InvalidErrorResponseBody";
+                    if (string.IsNullOrEmpty((string)context.Variables["old-body"]))
+                    {
+                        newResponseBody["error"]["message"] = "The error response body was not a valid SOAP error response. The response body was empty.";
+                    }
+                    else
+                    {
+                        newResponseBody["error"]["message"] = "The error response body was not a valid SOAP error response. The response body was: '" + context.Variables["old-body"] + "'.";
+                    }
+                    return newResponseBody.ToString();
+                }</set-body>
+                    </when>
+                </choose>
+            </otherwise>
+        </choose>
+        <set-header name="Content-Type" exists-action="override">
+            <value>application/json</value>
+        </set-header>
+    </outbound>
+    <on-error>
+        <base />
+    </on-error>
+</policies>
