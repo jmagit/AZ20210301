@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace demo.servicebus {
     public static class ServiceBusExtensions {
@@ -40,7 +41,7 @@ namespace demo.servicebus {
     }
 
     public class Program {
-        static string ServiceBusConnectionString = "Endpoint=sb://cursoeverisprofe5.servicebus.windows.net/;SharedAccessKeyName=Cliente;SharedAccessKey=JIlK7arPS3ccaORg9HrOz10ucRqFlmJS9NvDRSwGkG0=";
+        static string ServiceBusConnectionString = "Endpoint=sb://cursoeverisprofe6.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=oJUfOWjxBJ9wHro2mRAPdLdNhAWTT2ZJE+Sje1gkPnI=";
         static ServiceBusClient srv = null;
         static string QueueOrTopicName = "";
         static string SubscriptionName = "";
@@ -79,9 +80,21 @@ namespace demo.servicebus {
                 case "send":
                     if (NumeroDeEnvios == 1)
                         SendMessageAsync().GetAwaiter().GetResult();
+                    else 
+                        SendMessageBatchAsync().GetAwaiter().GetResult();
                     break;
                 case "receive":
                     ReceiveMessageAsync().GetAwaiter().GetResult();
+                    break;
+                case "session":
+                    ReceiveSessionMessageAsync().GetAwaiter().GetResult();
+                    break;
+                case "commit":
+                case "rollback":
+                    TransactionAsync(args[0].ToLower() == "commit").GetAwaiter().GetResult();
+                    break;
+                case "dead":
+                    ReceiveDeadLetterAsync().GetAwaiter().GetResult();
                     break;
             }
         }
@@ -104,11 +117,44 @@ namespace demo.servicebus {
             } catch (Exception exception) {
                 Console.WriteLine($"{DateTime.Now} :: Exception: {exception.Message}");
             }
-
             await sender.CloseAsync();
             Console.WriteLine("Messages was sent successfully.");
-
         }
+        static async Task SendMessageBatchAsync() {
+            ServiceBusSender sender = srv.CreateSender(QueueOrTopicName);
+            string[] sessionIds = { Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), Guid.NewGuid().ToString() };
+            ServiceBusMessageBatch messageBatch = await sender.CreateMessageBatchAsync();
+
+            try {
+                for (int i = 0; i < NumeroDeEnvios; i++) {
+                    string messageBody = $"Mensaje {DateTime.Now:mm:ss:ff}: valor {rnd.Next(1, 100)}.";
+                    var item = new Item() { Id = i, Mensaje = messageBody };
+                    var message = item.AsMessage();
+                    message.To = item.Categoria;
+                    message.Subject = item.Nivel;
+                    message.ApplicationProperties.Add("nivel", item.Nivel);
+                    message.MessageId = $"{DateTime.Now.Minute}-{i}";
+                    message.SessionId = sessionIds[i % 3];
+                    if (TimeToLive > 0)
+                        message.TimeToLive = TimeSpan.FromSeconds(TimeToLive);
+                    Console.WriteLine($"Sending message: {message.MessageId} - {item}");
+                    if (!messageBatch.TryAddMessage(message)) {
+                        await sender.SendMessagesAsync(messageBatch);
+                        Console.WriteLine($"Sending Batch: {messageBatch.Count} - {messageBatch.SizeInBytes}");
+                        messageBatch.Dispose();
+                        messageBatch = await sender.CreateMessageBatchAsync();
+                        messageBatch.TryAddMessage(message);
+                    }
+                }
+                Console.WriteLine($"Sending Batch: {messageBatch.Count} - {messageBatch.SizeInBytes}");
+                await sender.SendMessagesAsync(messageBatch);
+            } catch (Exception exception) {
+                Console.WriteLine($"{DateTime.Now} :: Exception: {exception.Message}");
+            }
+            await sender.CloseAsync();
+            Console.WriteLine("Messages was sent successfully.");
+        }
+
         static async Task ReceiveMessageAsync() {
             Console.WriteLine("=========================================================");
             Console.WriteLine("Press ENTER key to exit after receiving all the messages.");
@@ -120,8 +166,8 @@ namespace demo.servicebus {
                 srv.CreateProcessor(QueueOrTopicName, options) :
                 srv.CreateProcessor(QueueOrTopicName, SubscriptionName, options);
             processor.ProcessMessageAsync += async (arg) => {
-                // Console.WriteLine($"Received message: SequenceNumber: {arg.Message.SequenceNumber} Body: {Encoding.UTF8.GetString(arg.Message.Body)}");
-                Console.WriteLine($"Received message: SequenceNumber: {arg.Message.SequenceNumber} Body: {arg.Message.As<Item>().ToString()}");
+                Console.WriteLine($"Received message: SequenceNumber: {arg.Message.SequenceNumber} Body: {Encoding.UTF8.GetString(arg.Message.Body)}");
+                // Console.WriteLine($"Received message: SequenceNumber: {arg.Message.SequenceNumber} Body: {arg.Message.As<Item>().ToString()}");
                 if (AbandonarMultiplosDe > 0 && arg.Message.SequenceNumber % AbandonarMultiplosDe == 0) {
                     await arg.AbandonMessageAsync(arg.Message);
                 } else
@@ -131,6 +177,66 @@ namespace demo.servicebus {
             await processor.StartProcessingAsync();
             Console.Read();
             Console.WriteLine("Exit processor...");
+        }
+        static async Task ReceiveSessionMessageAsync() {
+            Console.WriteLine("=========================================================");
+            Console.WriteLine("Press ENTER key to exit after receiving all the messages.");
+            Console.WriteLine("=========================================================");
+            var options = new ServiceBusSessionProcessorOptions {
+                AutoCompleteMessages = false,
+                MaxConcurrentSessions = 2,
+                MaxConcurrentCallsPerSession = 2
+            };
+            await using ServiceBusSessionProcessor processor = string.IsNullOrWhiteSpace(SubscriptionName) ?
+                srv.CreateSessionProcessor(QueueOrTopicName, options) :
+                srv.CreateSessionProcessor(QueueOrTopicName, SubscriptionName, options);
+            processor.ProcessMessageAsync += async (arg) => {
+                Console.WriteLine($"Received message: {arg.SessionId} SequenceNumber: {arg.Message.SequenceNumber} Body: {Encoding.UTF8.GetString(arg.Message.Body)}");
+                if (AbandonarMultiplosDe > 0 && arg.Message.SequenceNumber % AbandonarMultiplosDe == 0) {
+                    await arg.AbandonMessageAsync(arg.Message);
+                } else
+                    await arg.CompleteMessageAsync(arg.Message);
+            };
+            processor.ProcessErrorAsync += ExceptionReceivedHandler;
+            await processor.StartProcessingAsync();
+            Console.Read();
+            Console.WriteLine("Exit ...");
+            await processor.CloseAsync();
+        }
+
+        static async Task ReceiveDeadLetterAsync() {
+            var deadletterReceiver = srv.CreateReceiver(QueueOrTopicName, new ServiceBusReceiverOptions() {
+                ReceiveMode = ServiceBusReceiveMode.PeekLock,
+                SubQueue = SubQueue.DeadLetter
+            });
+            while (true) {
+                var message = await deadletterReceiver.ReceiveMessageAsync(TimeSpan.FromSeconds(1));
+                if (message == null) break;
+                Console.WriteLine($"Deadletter message: {message.SessionId} SequenceNumber:{message.SequenceNumber} Body: {message.MessageId} - {Encoding.UTF8.GetString(message.Body)}");
+                foreach (var prop in message.ApplicationProperties) {
+                    Console.WriteLine("\t{0}={1}", prop.Key, prop.Value);
+                }
+                await deadletterReceiver.CompleteMessageAsync(message);
+            }
+            await deadletterReceiver.CloseAsync();
+        }
+
+        static async Task TransactionAsync(bool commit) {
+            ServiceBusSender sender = srv.CreateSender(QueueOrTopicName);
+            using (var ts = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled)) {
+                await sender.SendMessageAsync(new ServiceBusMessage("Paso1"));
+                await sender.SendMessageAsync(new ServiceBusMessage("Paso2"));
+                await sender.SendMessageAsync(new ServiceBusMessage("Paso3"));
+                // ...
+                if (commit) {
+                    ts.Complete();
+                    Console.WriteLine("Messages was sent successfully.");
+                } else {
+                    Console.WriteLine("Messages was cancel.");
+                    ts.Dispose();
+                }
+            }
+            await sender.CloseAsync();
         }
 
         static Task ExceptionReceivedHandler(ProcessErrorEventArgs ex) {
