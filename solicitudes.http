@@ -39,3 +39,12 @@ SOAPAction: "NumberToDollars"
   </Body>
 </Envelope>
 
+###
+POST https://cursoeverisprofe8.azure-api.net/soap/NumberToWords
+Content-Type: application/json
+
+{
+  "numberToWords": {
+    "ubiNum": 1234
+  }
+}
